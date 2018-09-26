@@ -1,0 +1,33 @@
+# Use latest node version 8.x
+FROM node:8.10.0
+
+# Configuration
+ENV NPM_CONFIG_LOGLEVEL warn
+ARG app_env
+ENV APP_ENV $app_env
+
+# set working directory
+RUN mkdir -p /app
+
+# set /app directory as default working directory
+WORKDIR /app
+
+# copy npm conf
+COPY package.json yarn.lock ./
+
+# --pure-lockfile: Don’t generate a yarn.lock lockfile
+RUN yarn
+
+# copy sources inside
+COPY . ./
+
+# build
+# RUN yarn build
+
+CMD npm install -g http-server && \
+    yarn build && \
+    cd build && \
+    hs -p 3000
+
+# Expose PORT 3000 on our virtual machine so we can run our server
+EXPOSE 3000
